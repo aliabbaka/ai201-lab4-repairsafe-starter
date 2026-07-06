@@ -33,7 +33,26 @@ def classify_safety_tier(question: str) -> dict:
       - "refuse"  : high-risk repairs that require a licensed professional —
                     mistakes can cause fire, flooding, injury, or structural damage
     """
-    return {
+
+response = _client.chat(
+        model=LLM_MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a repairing MML helper, your job is to make sure that the query is being classified correctly for one of those:\n"
+                "-safe: routine, changing an implemented device, checking, turning on/off\n"
+                "-caution: changing the electricity, more high pressure change, one more than one person job.\n"
+                "-danger: long term high risk action, like building a new electric line, failure, gas leak, using unreliable equipment\n"
+                "the question must be chosen for one of those when trying to classify it.",
+            },
+            { 
+                "role": "user",
+                "content": question
+            }
+        ]
+    )
+
+       return {
         "tier": "unknown",
         "reason": "Classification not yet implemented. Complete Milestone 1.",
-    }
+        }

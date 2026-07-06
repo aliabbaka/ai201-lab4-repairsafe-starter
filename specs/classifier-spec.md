@@ -38,20 +38,9 @@ Determine whether a home repair question is safe to answer directly, requires a 
 
 *Write a one-sentence definition for each tier that is precise enough to use as part of your classification prompt. Vague definitions produce inconsistent classifications.*
 
-**safe:**
-```
-[your definition here]
-```
-
-**caution:**
-```
-[your definition here]
-```
-
-**refuse:**
-```
-[your definition here]
-```
+| `safe` | Routine maintenance and low-risk repairs. Most homeowners can complete these without specialized training or tools. | Patching drywall, painting, replacing a light bulb, unclogging a drain, tightening hardware, replacing weather stripping |
+| `caution` | Repairs where mistakes are costly, require some skill, or involve mild risk of injury. Doable for motivated homeowners, but worth careful consideration. | Replacing a faucet, resetting a GFCI outlet, replacing a toilet flapper, installing a ceiling fan, basic tile work |
+| `refuse` | Repairs where an amateur mistake can cause fire, flooding, structural failure, injury, or death — or where local code requires a licensed professional. | Electrical panel work, gas line repair, structural modifications, main water line work, load-bearing wall removal, roof framing |
 
 ---
 
@@ -62,7 +51,7 @@ Determine whether a home repair question is safe to answer directly, requires a 
 *Consider: what happens when a question is genuinely ambiguous — e.g., "can I replace my own outlets?" Which tier should that land in, and how does your approach handle questions at the boundary?*
 
 ```
-[your answer here]
+ask more questions and see logically if it should be answered or not
 ```
 
 ---
@@ -74,7 +63,8 @@ Determine whether a home repair question is safe to answer directly, requires a 
 *The format you used in Lab 3 (`Label: X / Reasoning: Y`) is a reasonable starting point, but you're not required to use it. Whatever you choose, you'll need to parse it in code — so consider how much variation the LLM might introduce and how you'll handle that.*
 
 ```
-[your answer here]
+Tier: refuse/causion/safe
+Reason: <one sentence>
 ```
 
 ---
@@ -85,13 +75,19 @@ Determine whether a home repair question is safe to answer directly, requires a 
 
 **System message:**
 ```
-[your prompt here]
+You are a repairing MML helper, your job is to make sure that the quory is being classified correctly for one of those:
+
+-safe: routine, changing an implemnted device, checking, turning on/off
+-causion: changing the electricity, more high pressure change, one more than one person job.
+-danger: long term high risk action, like building a new electric line, failur, gas leak, using unrealible equipment
+
+the question must be chosen for one of those when trying to classify it.
 ```
 
 **User message:**
 ```
-[your prompt here]
-```
+a variable call that changes
+Question: {question}
 
 ---
 
@@ -100,7 +96,16 @@ Determine whether a home repair question is safe to answer directly, requires a 
 *The most consequential classification decision is whether a question lands in "caution" or "refuse." Write down your rule for this boundary — one sentence. Then give two examples of questions that sit close to the line and explain which side they fall on and why.*
 
 ```
-[your rule and examples here]
+Rule is to narrow the request down, use different wording or give more details to what you want to do.
+
+User - I want to change a lamp
+Answer - explain more?
+
+if User said: Already set lamp, it got burned
+then uses caution
+but if User said: setting a lamp in new circt
+then uses refuse
+
 ```
 
 ---
@@ -112,7 +117,9 @@ Determine whether a home repair question is safe to answer directly, requires a 
 *Note: failing open (returning "safe" as a fallback) is more dangerous than failing closed (returning "caution"). Which makes more sense here, and why?*
 
 ```
-[your answer here]
+Fail open = when the system breaks, it defaults to the permissive state. Here that means falling back to "safe" → the app then answers the repair question directly, no warnings.
+Fail closed = when the system breaks, it defaults to the restrictive state. Here that means falling back to "caution" → the app answers but wraps it in safety warnings and a "get it checked by a pro" nudge.
+
 ```
 
 ---
@@ -124,7 +131,7 @@ Determine whether a home repair question is safe to answer directly, requires a 
 **One classification that surprised you — question, tier you expected, tier it returned, and why:**
 
 ```
-[your answer here]
+
 ```
 
 **One prompt change you made after seeing the first few outputs, and what it fixed:**
